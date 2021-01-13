@@ -7,8 +7,8 @@ if(length(`New Packages`)) install.packages(`New Packages`)
 invisible(suppressPackageStartupMessages(suppressWarnings(lapply(`Required Packages`, require, character.only=T))))
 
 #Font load-in====
-loadfonts(device = "win", quiet = TRUE)
-windowsFonts("TREBUC" = windowsFont("TREBUC"))
+loadfonts(device = "all", quiet = TRUE)
+windowsFonts()
 
 #Data load in====
 ACdata <- tt_load('2021-01-12')
@@ -113,6 +113,9 @@ USmediumdata <- USmediumdata %>%
 # Adding y axis lengths for geom_segments.#
 USmediumdata$ysegmentpos <- c(1,-1,1.5,-1.5,1,-1,1.5,-1.5,1,-1,1.5)
 
+#Adding y axis positions for geom_text.#
+USmediumdata$ytextpos <- c(1.2,-1.1,1.7,-1.7,1.2,-1.1,1.7,-1.7,1.2,-1.1,1.7)
+
 #Setting x axis positions for each decade.#
 Decadestart <- seq(from = 1905, to = 2005, by = 10)
 
@@ -120,10 +123,16 @@ Decadestart <- seq(from = 1905, to = 2005, by = 10)
 USmediumdata$Year <- Decadestart
 
 #Setting color values for the plot.#
-Colors <- rep(c("#1c1c1c","#ffffff"),7)
+Colors <- rep(c("#999999","#ffffff"),7)
+
+#Loading in background image.#
+img.file <- "ACbackground.png"
+img <- png::readPNG(img.file)
 
 # Building the plot====
 ggplot(USmediumdata,aes(x=Year,y=0, col=Decade, label=Decade))+
+  labs(title = "Mediums Through the Decades and Across the Pond:\nA High-Level Look Into The Tate's American Art Collection", subtitle = "\n\nThe Tate Art Museum is a British institution that holds the national collection of British art from 1500 to present day.[https://www.tate.org.uk/] The museum also holds international modern and \ncontemporary art. The timeline below displays the most frequent used mediums and/or methods for art pieces contributed to the Tate Collection by American artists from 1900 to present day.", caption = "Data Source: Tate Collection | Created by: @meghansharris")+
+  ggpubr::background_image(img)+
   geom_hline(yintercept=0,color = "#333333", size=5) +
   geom_segment(USmediumdata, mapping = aes(y=ysegmentpos,yend=0,xend=Year, size = 3)) +
   scale_color_manual(values = Colors)+
@@ -139,4 +148,12 @@ ggplot(USmediumdata,aes(x=Year,y=0, col=Decade, label=Decade))+
              fill = ifelse(USmediumdata$Decade %in% c("1900's","1920's","1940's","1960's","1980's","2000's"),"#1c1c1c", "#ffffff")) +
   theme_void()+
   theme(plot.background = element_rect(fill = "black"),
-        legend.position = "none") 
+        legend.position = "none",
+        plot.title = element_text(size=20,hjust = 0.02, family = "mono", color = "#ffffff", face = "bold"),
+        plot.subtitle = element_text(size=12,hjust = 0.00, family = "GOTHIC", color = "#ffffff"),
+        plot.caption = element_text(size=12,hjust = 1, vjust = .5, family = "mono", color = "#ffffff")) +
+    
+  geom_text(mapping = aes(y=ytextpos,x=Year), label = USmediumdata$`Medium/Method`, size = 5, family = "TREBUC") +
+  ylim(-5,4) 
+
+
