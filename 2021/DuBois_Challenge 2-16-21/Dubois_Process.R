@@ -33,6 +33,7 @@ Expense_factors <- names(sort(colSums(Income[,3:7], na.rm = TRUE), decreasing = 
 
 Income_long$Expenses <- factor(Income_long$Expenses, levels = Expense_factors)
 
+
 #Loading in background image===
 img <- png::readPNG("dubois bckgd.png")
 
