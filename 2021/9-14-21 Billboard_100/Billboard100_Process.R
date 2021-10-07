@@ -168,7 +168,7 @@ ggplot(aes(x = x, y = y, fill = year, color = year))+
                                    hjust = 1))+
   labs(title = paste0('<img style="display: inline-block;"  src="images/90s.png" alt="90s" width="600" height="250" />'),
        subtitle = "This visual presents the artists and songs that topped the <b>Billboard 100</b> charts in the 90's with a peak position of first place at some point in the decade. This 
-       data provided by <b>Data.World</b> and <b>Billboard.com</b> shows the maximum number of weeks a song remained on the charts in each year through the decade. Dates used for year categories are based on when the song had officially reached its maximum record.
+       data provided by <b>Data.World</b> and <b>Billboard.com</b> shows the maximum number of weeks a song remained on the charts in each year through the decade with dotted lines representing the length in weeks. Dates used for year categories are based on when the song had officially reached its maximum record.
        The most popular song in the decade was seen in <span style = 'color:#277e9d'><b>1996</b></span> with <b>Los Del Rio's</b> hit <span style = 'color:#277e9d'><i><b>Macarena(Bayside Boys mix)</b></i></span> with a top record of
        46 weeks. <span style = 'color:#b2336a'><b><i>Smooth</i></b></span> by <b>Santana featuring Rob Thomas</b> in <span style = 'color:#b2336a'><b>1999</b></span> and <span style = 'color:#154baf'><b><i>The Sign</b></i></span> by <b>Ace of Base</b> in 
        <span style = 'color:#154baf'><b>1994</b></span> were the second and third popular songs of the decade with a total of 22 and 20 weeks on the charts respectively.",
