@@ -5,6 +5,13 @@ library(tidyverse) # For Everything Data
 library(showtext) # To bring in text from Google
 library(patchwork) # To wrangle ggplot layouts
 library(cowplot) # To make patchwork plots play nice
+library(ggtext) # To add conditional formatting to titles/subtitle
+library(glue) # To glue in my caption
+
+## Adding in Google Fonts====
+font_add_google("Shadows Into Light Two")
+font_add_google("Work Sans")
+showtext_auto()
 
 # Data Load-in====
 Rankings_data <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-10-26/ultra_rankings.csv')
@@ -71,18 +78,26 @@ dist_curves[[i]] <- filtered_data[[i]] %>%
   annotate(geom = "rect",
            xmin = -Inf,
            xmax = 40,
-           ymin = .9,
+           ymin = .09,
            ymax = Inf,
            color = borders[i],
            fill = fills[i],
            size = 2)+
   annotate(geom = "text",
            x = 26,
-           y = .057,
+           y = .097,
            label = names(countries)[i],
            family ="Shadows Into Light Two",
            size = 10,
-           color = borders[i])
+           color = borders[i])+
+  annotate(geom = "text",
+           x = mean(filtered_data[[i]]$age  + 25),
+           y = .068,
+           label = paste("Average Age:\n", round(mean(filtered_data[[i]]$age), digits = 1),"Years Old"),
+           family ="Shadows Into Light Two",
+           size = 7,
+           color = borders[i],
+           hjust = 1)
 
 names(dist_curves)[i] <- paste0(countries[i],"_Dist")
 }
@@ -96,16 +111,13 @@ for(i in seq_along(filtered_data)){
   
 box_plots[[i]] <- filtered_data[[i]] %>% 
   ggplot(aes(x=age))+
-  geom_boxplot(fill = fills[i], color = borders[i], size = 1.5)+
+  geom_boxplot(fill = fills[i], color = borders[i], size = 1)+
   theme_void()+
   coord_cartesian(xlim = plot_limits)
   
 names(box_plots)[i] <- paste0(countries[i],"_Boxplots")
 }
 
-## Adding in Google Fonts====
-font_add_google("Shadows Into Light Two")
-showtext_auto()
 
 # Making Scatter Plots====
 scatter_plots <- list()
@@ -123,7 +135,6 @@ for(i in seq_along(filtered_data)){
   
 names(scatter_plots)[i] <- paste0(countries[i],"_Scatter")
 }
-
 
 
 
@@ -156,11 +167,29 @@ plots <- plot_grid(Canada_Raincloud, Mexico_Raincloud, US_Raincloud,
                    ncol = 3, 
                    scale = 0.9)
 
- ggdraw(plots) + 
-  theme(plot.background = element_rect(fill=background, color = NA))
+# Adding final texts and aesthetics to the plot====
+final_plot <-  ggdraw(plots) + 
+  theme(plot.background = element_rect(fill=background),
+        plot.title = element_text(family = "Shadows Into Light Two", size = 40, color = "#372A24", hjust = 0),
+        plot.subtitle = element_textbox(family = "Work Sans", size = 12, color = "#372A24", hjust = 0, padding = margin(10,2,0,2)),
+        plot.caption = element_textbox(family = "Work Sans", size = 12, color = "#372A24", hjust = 0))+
+   labs(title = "The Average North American Trail Blazer is in Their 40's",
+        subtitle = paste0("Data from the International Trail Running Association (ITRA) shows that trail running 
+                          participants from the North American countries of Canada, Mexico, and the United States have an 
+                          average age that ranges from <b>45.3 - 46.8 years old</b>.<br> Participants under the age of 15 were 
+                          excluded based on standard age categories created by the United States Track and Field (USTAF) 
+                          Organization. While the average ages across the countries are similar, the amount of participants vary<br>
+                           with <span style = 'color:#ba3834'><b>",scales::comma(nrow(filtered_data$USA)),"</b> participants in <b>The United States</b></span>,<span style = 'color:#6a6a2a'><b> ", scales::comma(nrow(filtered_data$CAN)), 
+                          " </b> participants in <b>Canada</b></span>, and <span style = 'color:#634d41'><b>",scales::comma(nrow(filtered_data$MEX)),"<b> participants in <b>Mexico</b>.</span>"),
+        caption = glue("Data Source: International Trail Running Association (ITRA) | Created by: @Meghansharris ", '<img style="display: inline-block;"  src="images/twitter.png" alt="90s" width="12" height="12" />'))
+
+
+# Saving Final Plot out to the directory====
+ggsave("images/final_plot.svg",final_plot, 
+       device = "svg", 
+       width = 20, 
+       height = 12, 
+       units = "in")
 
 
 
-
-
-#to do - add ggrepel with average age and arrow from average line, place all plots together in one
