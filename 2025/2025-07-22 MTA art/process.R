@@ -212,9 +212,14 @@ vec_nearby_counties <-
 df_surrounding_counties <-
   counties(state = c("NJ", "NY")) |>
   filter(NAME %in% vec_nearby_counties) |>
+  # Fun fact, NY ALSO has a county called Richmond
+  # But just like most new yorkers consensus
+  # We don't acknowledge it unless we're talking about Wu-tang or Method man
+  # So kick it out
+  filter(!(NAME == "Richmond" & STATEFP == 36)) |>
   st_transform(crs = crs)
 
-## Create one df for all landmasses---------------------------------------------
+## Create a single df to hold all the landmass data
 df_landmass <-
   df_surrounding_counties |>
   bind_rows(df_nyc_boroughs) |>
